@@ -965,6 +965,31 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
 .tblwrap table th{text-transform:none;font-weight:600;color:var(--fg-2);background:var(--surface-3)}
 @media (max-width:999px){.app{background:var(--panel)!important}.side{border-bottom:1px solid var(--line)}.main{padding:16px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))!important}.navb[aria-current="page"]::before{display:none}}
 @media (min-width:1600px){.main{padding:28px 40px 64px!important}}
+
+.upsum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:6px}
+.upbox{border:1px solid var(--line);border-radius:8px;padding:10px 14px;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;border-left:3px solid var(--uc)}
+.upbox .ul{width:100%;font-size:12.5px;color:var(--muted);font-weight:500}
+.upbox .uv{font-size:24px;font-weight:600;line-height:1.2;color:var(--fg)}
+.upbox .uu{font-size:12.5px;color:var(--muted)}
+.up-late{--uc:var(--danger)}.up-today{--uc:var(--doing)}.up-week{--uc:var(--brand)}.up-later{--uc:var(--pebble)}
+.uplist{display:flex;flex-direction:column}
+.uph{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--fg-2);padding:12px 2px 6px;border-bottom:1px solid var(--line)}
+.uph::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--uc)}
+.uph .upc{font-weight:500;color:var(--muted)}
+.uprow{display:flex;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);min-width:0}
+.updt{width:44px;flex:none;text-align:center;border:1px solid var(--line);border-radius:6px;padding:3px 0;line-height:1.15;background:var(--surface)}
+.updt b{display:block;font-size:16px;font-weight:600}
+.updt span{font-size:11px;color:var(--muted)}
+.updt.late{border-color:color-mix(in srgb,var(--danger) 45%,var(--line));color:var(--danger)}
+.updt.today{border-color:color-mix(in srgb,var(--doing) 45%,var(--line));color:var(--doing)}
+.upbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.upn{background:none;border:0;padding:0;text-align:left;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.upn:hover{color:var(--brand);text-decoration:underline}
+.upm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px}
+.uprel{font-size:12.5px;color:var(--muted);white-space:nowrap;flex:none}
+.uprow .tchk{width:24px;height:24px}
+.uprel.late{color:var(--danger);font-weight:600}.uprel.soon{color:var(--doing);font-weight:600}
+@media (max-width:640px){.upsum{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.upbox{padding:8px 10px}.upbox .uv{font-size:20px}.uprel{display:none}}
 </style>
 
 <div class="frame">
@@ -1297,6 +1322,34 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
   }
 
   /* ---------- views ---------- */
+  function upcomingHtml(){
+    var MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    var l=items.filter(function(p){return p.status!=='done'&&dueOf(p);}).map(function(p){return {p:p,d:dueOf(p),x:dayDiff(dueOf(p))};});
+    l.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:ordSort(a.p,b.p);});
+    var G=[['late','เกินกำหนด',function(e){return e.x<0;}],['today','วันนี้',function(e){return e.x===0;}],['week','7 วันข้างหน้า',function(e){return e.x>=1&&e.x<=7;}],['later','ถัดไป (ภายใน 30 วัน)',function(e){return e.x>7&&e.x<=30;}]];
+    var c=G.map(function(g){return l.filter(g[2]).length;});
+    var h='<div class="upsum">'+[[0,'เกินกำหนด','up-late'],[1,'ครบกำหนดวันนี้','up-today'],[2,'ภายใน 7 วัน','up-week']].map(function(b){return '<div class="upbox '+b[2]+'"><span class="ul">'+b[1]+'</span><b class="uv">'+c[b[0]]+'</b><span class="uu">งาน</span></div>';}).join('')+'</div>';
+    var shown=0,MAX=8,any=false;
+    h+='<div class="uplist">';
+    G.forEach(function(g,gi){
+      var gl=l.filter(g[2]);if(!gl.length)return;any=true;
+      if(shown>=MAX)return;
+      h+='<div class="uph up-'+g[0]+'"><span>'+g[1]+'</span><span class="upc">'+gl.length+'</span></div>';
+      gl.forEach(function(e){
+        if(shown>=MAX)return;shown++;
+        var p=e.p,id=esc(p.id),dt=new Date(e.d+'T00:00:00');
+        h+='<div class="uprow cb-'+p.category+'"><div class="updt'+(e.x<0?' late':e.x===0?' today':'')+'"><b>'+dt.getDate()+'</b><span>'+MON[dt.getMonth()]+'</span></div>';
+        h+='<div class="upbody"><button class="upn" type="button" data-act="open" data-id="'+id+'">'+esc(p.name||'(ไม่มีชื่อ)')+'</button><span class="upm"><span class="tag">'+lab(CAT,p.category)+'</span><span class="tstat st-'+p.status+'"><i></i>'+lab(ST,p.status)+'</span>'+(p.owner?'<span class="sub">'+esc(p.owner)+'</span>':'')+'</span></div>';
+        h+='<span class="uprel'+(e.x<0?' late':e.x<=1?' soon':'')+'">'+relDay(e.d)+'</span>';
+        h+='<button class="tchk" type="button" data-act="rtoggle" data-id="'+id+'" aria-pressed="false" aria-label="ทำเสร็จแล้ว"'+(ro?' disabled':'')+'>'+ICK+'</button></div>';
+      });
+    });
+    h+='</div>';
+    if(!any)return h+'<div class="stk-empty"><b>ไม่มีงานค้างที่มีกำหนดส่ง</b><span class="sub">งานทั้งหมดเสร็จแล้ว หรือยังไม่ได้กำหนดวันส่ง</span></div>';
+    var rest=l.filter(function(e){return e.x<=30;}).length-shown;
+    if(rest>0)h+='<button class="tmore" type="button" data-act="goto" data-v="calendar">ดูอีก '+rest+' งานในปฏิทิน '+svg('arrow',13)+'</button>';
+    return h;
+  }
   function vchart(key){
     var a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),map=calMap(key);
     var due=[],max=0,tot=0,tdone=0;
@@ -1415,7 +1468,7 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
     if(!n&&!loading){return h+emptyBox('ยังไม่มีงานในระบบ','เพิ่มงานแรก แล้วภาพรวมจะคำนวณให้ทันที',(ro||!db)?'':'<button class="btn" type="button" data-act="new">'+PLUS+'เพิ่มงาน</button>');}
     var TI=[['all','tClip','งานทั้งหมด',n,'<span class="delta up">เฉลี่ย '+avg+'%</span>','t-all'],['todo','tBox','ต้องทำ',cnt.todo,'','t-todo'],['doing','tSpin','กำลังดำเนินการ',cnt.doing,late?'<span class="delta warn">เกินกำหนด '+late+'</span>':'','t-doing'],['review','tEye','รอตรวจสอบ',cnt.review,'','t-review'],['done','tDone','เสร็จสมบูรณ์',cnt.done,'<span class="delta up">'+(n?Math.round(cnt.done/n*100):0)+'%</span>','t-done']];
     h+='<div class="dtiles">'+TI.map(function(t){return '<button class="tile ctile '+t[5]+'" type="button" data-act="tile" data-s="'+t[0]+'" aria-label="ดู'+t[2]+' '+t[3]+' งาน"><span class="tl"><span class="emo">'+svg(t[1],19,1.6)+'</span><span class="tlt">'+t[2]+'</span></span><div class="tvrow"><b class="tv">'+t[3]+'</b>'+t[4]+'</div></button>';}).join('')+'</div>';
-    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>งานตามวันที่ครบกำหนด · '+esc(monthLabel(chartKey||cycle))+'</h2><div class="mnav sm"><button type="button" data-act="ch-prev" aria-label="เดือนก่อน">'+svg('chevL',15,1.8)+'</button><button type="button" data-act="ch-next" aria-label="เดือนถัดไป">'+svg('chevR',15,1.8)+'</button></div></div>'+vchart(chartKey||cycle)+'</section>';
+    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>กำหนดส่งที่ใกล้ถึง</h2><button class="va" type="button" data-act="goto" data-v="calendar">ดูปฏิทิน '+svg('arrow',14)+'</button></div>'+upcomingHtml()+'</section>';
     h+='<section class="card"><div class="ch"><h2>ความคืบหน้ารวม</h2><button class="va" type="button" data-act="goto" data-v="kanban">ดูทั้งหมด '+svg('arrow',14)+'</button></div>'+gaugeHtml(cnt,n,avg)+'<div class="hr"></div><div class="gl">';
     CAT.forEach(function(c){
       var l=items.filter(function(p){return p.category===c[0];}),d=l.filter(function(p){return p.status==='done';}).length;
