@@ -1103,7 +1103,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   var STG=[['negotiate','เจรจา'],['contract','ทำสัญญา'],['staffing','จัดกำลังพล'],['ready','พร้อมให้บริการ']];
   var LT=[['structure','โครงสร้างองค์กร'],['policy','กฎระเบียบ'],['order','คำสั่งภายใน'],['staff','เปลี่ยนแปลงกำลังพล'],['transfer','โยกย้ายหน่วยงาน'],['training','อบรมประจำปี'],['complaint','ร้องเรียน / เคสสำคัญ'],['contractor','ปรับเปลี่ยนบริษัทรปภ.'],['newsite','เพิ่มโครงการที่รับบริหาร']];
   var REM=[[-1,'ไม่ต้องแจ้งเตือน'],[0,'แจ้งในวันครบกำหนด'],[1,'แจ้งล่วงหน้า 1 วัน'],[3,'แจ้งล่วงหน้า 3 วัน'],[7,'แจ้งล่วงหน้า 7 วัน']];
-  var VIEWS=[['dash','ภาพรวม'],['clist','เช็กลิสต์งาน'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','รายการงานทั้งหมด'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
+  var VIEWS=[['dash','ภาพรวม'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','รายการงานทั้งหมด'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
   var PALS=[["mist", "Corporate Navy", "ทางการ มาตรฐานสากล (ค่าเริ่มต้น)", ["#F3F5F8", "#FFFFFF", "#CBD2DB", "#1F4E8C", "#1F3A5F"]], ["royal", "Royal Blue", "องค์กร น่าเชื่อถือ", ["#2563EB", "#60A5FA", "#DBEAFE", "#F1F5F9", "#FFFFFF"]], ["navy", "Navy & White", "มืออาชีพ ทันสมัย", ["#0F1E3A", "#1E2F4F", "#A7B6D0", "#E3EAF3", "#FFFFFF"]], ["softblue", "Soft Blue", "โปร่ง สบายตา", ["#8DB4D6", "#D6E6F2", "#F2F7FB", "#FFFFFF", "#2E4A63"]], ["emerald", "Emerald", "สดชื่น สุขภาพ", ["#10B981", "#34D399", "#A7F3D0", "#ECFDF5", "#FFFFFF"]], ["teal", "Teal & Dark", "ทันสมัย สายเทค", ["#0D9488", "#2DD4BF", "#0F766E", "#1F2937", "#111827"]], ["orange", "Orange & Navy", "กระตือรือร้น โดดเด่น", ["#F97316", "#FDBA74", "#0F172A", "#334155", "#F8FAFC"]], ["purple", "Purple & Pink", "สร้างสรรค์ สดใส", ["#7C3AED", "#A78BFA", "#EC4899", "#F9A8D4", "#FCE7F3"]], ["yellow", "Yellow & Gray", "อบอุ่น อ่านง่าย", ["#FACC15", "#FDE68A", "#1F2937", "#6B7280", "#F3F4F6"]], ["beige", "Beige & Brown", "อบอุ่น เป็นกันเอง", ["#F3E9DD", "#E6D5C1", "#A67C52", "#6B4E3D", "#FFFFFF"]], ["sage", "Sage & Cream", "สงบ เป็นธรรมชาติ", ["#A8B5A0", "#C7D3C1", "#F2F5EF", "#FAFAF7", "#3F5039"]], ["dusty", "Dusty Pink & Gray", "นุ่มนวล ละมุน", ["#D7B1B7", "#EACCC5", "#D8D8D8", "#6F6F6F", "#FFFFFF"]], ["rose", "Rose & Cream", "หวาน มีสไตล์", ["#F43F5E", "#FB7185", "#FFF1F2", "#FEF3C7", "#FFFBEB"]], ["noir", "Black & Silver", "หรูหรา เฉียบคม", ["#0D0D0D", "#2B2B2B", "#8E8E8E", "#E6E6E6", "#FFFFFF"]], ["green", "Green & Black", "ปลอดภัย การเงิน", ["#22C55E", "#4ADE80", "#16A34A", "#0D1117", "#1F2937"]]];
   var pref={pal:'mist',mode:'light'};
   try{var _p=JSON.parse(localStorage.getItem('pt-prefs2')||'{}');if(_p.pal)pref.pal=_p.pal;}catch(e){}
@@ -1553,14 +1553,6 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     if((a.createdAt||0)!==(b.createdAt||0))return (a.createdAt||0)-(b.createdAt||0);
     return PR_RANK[a.priority]-PR_RANK[b.priority];
   }
-  function clistHtml(){
-    var h='<div class="page-head"><div><h1>เช็กลิสต์งาน</h1><p class="sub">รอบงานรูทีน '+esc(monthLabel(cycle))+' · เรียงตามลำดับงานรูทีน ติ๊กเมื่อทำเสร็จ</p></div></div>';
-    var open=items.slice().sort(function(a,b){var da=dueOf(a)||'9999',db_=dueOf(b)||'9999';if(da!==db_)return da<db_?-1:1;return PR_RANK[a.priority]-PR_RANK[b.priority];});
-    h+='<section class="card"><div class="ch"><h2 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+ico('folder',20)+'งานทั้งหมด <span class="sub" style="font-weight:500">'+open.filter(function(p){return p.status==='done';}).length+'/'+open.length+' เสร็จแล้ว · เรียงตามลำดับงานรูทีน</span></h2></div>';
-    h+=open.length?taskList(open,999):'<p class="sub">'+ico('spark',22)+' ไม่มีงานค้าง</p>';
-    h+='</section>';
-    return h;
-  }
   function taskList(l,max){
     var h='<div class="tlist">',groups=['routine','general','company','project'],n=0;
     groups.forEach(function(c){
@@ -1706,11 +1698,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   }
   function routineHtml(){
     var l=items.filter(function(p){return p.category==='routine';});
-    l.sort(function(a,b){
-      var oa=typeof a.order==='number'?a.order:1e9,ob=typeof b.order==='number'?b.order:1e9;
-      if(oa!==ob)return oa-ob;
-      if(oa===1e9&&(a.createdAt||0)!==(b.createdAt||0))return (a.createdAt||0)-(b.createdAt||0);
-      return a.name.localeCompare(b.name,'th');});
+    l.sort(ordSort);
     var done=l.filter(function(p){return p.status==='done';}).length;
     var pass=l.filter(function(p){return p.result==='pass';}).length,fail=l.filter(function(p){return p.result==='fail';}).length;
     var avg=l.length?Math.round(l.reduce(function(s,p){return s+prog(p);},0)/l.length):0;
@@ -1935,7 +1923,6 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     if(view==='projects')return projectsHtml();
     if(view==='logs')return logsHtml();
     if(view==='kanban')return kanbanHtml();
-    if(view==='clist')return clistHtml();
     if(view==='calendar')return calHtml();
     if(view==='settings')return settingsHtml();
     return dashHtml();
@@ -2116,7 +2103,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   }
   function renderNav(){
     var open=function(c){return items.filter(function(p){return p.category===c&&p.status!=='done';}).length;};
-    var cnt={routine:open('routine')+open('general'),projects:open('project'),logs:open('company')};
+    var cnt={routine:open('routine')+open('general'),projects:open('project'),logs:open('company'),kanban:items.filter(function(p){return p.status!=='done';}).length};
     function btn(k,lab,badge,hot,cur){return '<button class="navb" type="button" data-view="'+k+'"'+(cur?' aria-current="page"':'')+' title="'+esc(lab)+'"><span class="ni">'+svg(k==='alerts'?'bell':k,19,1.5)+'</span><span class="lbl">'+lab+'</span>'+(badge?'<span class="n'+(hot?' hot':'')+'">'+badge+'</span>':'')+'</button>';}
     $('nav').innerHTML=VIEWS.filter(function(v){return v[0]!=='settings';}).map(function(v){return btn(v[0],v[1],cnt[v[0]]||0,false,view===v[0]&&!gq.trim());}).join('');
     var al=alerts().length;
