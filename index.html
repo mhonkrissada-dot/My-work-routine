@@ -1034,6 +1034,21 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
 .tlv.s-late{color:var(--danger)}.tlv.s-today{color:var(--doing)}
 .tlc+.vleg{margin-top:28px}
 @media (max-width:640px){.tlc{--lw:118px}.tln{font-size:12px;padding-right:8px}.tlv{display:none}}
+
+.chr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.segtab.sm button{padding:5px 10px;font-size:12.5px}
+button.wcol{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;border-radius:6px}
+button.wcol:hover .wbar{filter:brightness(.94)}
+.wcol.sel{background:color-mix(in srgb,var(--brand) 7%,transparent);box-shadow:inset 0 -2px 0 var(--brand)}
+.wx span{cursor:pointer}
+.wx span.sel b{color:var(--brand)}
+.wlist{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.wlh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:13px;padding:2px 2px 6px;border-bottom:1px solid var(--line)}
+.wlh span{color:var(--muted)}
+.wlh .wlhint{margin-left:auto;font-size:12px}
+.wlempty{padding:16px 2px;color:var(--muted);font-size:13px}
+.uprow.isdone .upn{color:var(--muted);text-decoration:line-through}
+@media (max-width:640px){.wlh .wlhint{display:none}}
 </style>
 
 <div class="frame">
@@ -1366,29 +1381,42 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
   }
 
   /* ---------- views ---------- */
+  var chartView='week',wSel=null;try{if(localStorage.getItem('pt-chartv')==='tl')chartView='tl';}catch(e){}
   function wchart(key){
     var MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     var a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),map=calMap(key),td=todayStr(),mn=MON[+a[1]-1];
     var W=[[1,7],[8,14],[15,21],[22,28]];if(dim>28)W.push([29,dim]);
     var tot=0,tdn=0,tlate=0,max=0,cur=-1;
     var rows=W.map(function(w,wi){
-      var dn=0,late=0,pend=0;
-      for(var d=w[0];d<=w[1];d++){var ds=key+'-'+pad(d);if(ds===td)cur=wi;(map[ds]||[]).forEach(function(e){if(entryDone(e,key))dn++;else if(ds<td)late++;else pend++;});}
-      var t=dn+late+pend;tot+=t;tdn+=dn;tlate+=late;if(t>max)max=t;return {w:w,dn:dn,late:late,pend:pend,t:t};
+      var dn=0,late=0,pend=0,es=[];
+      for(var d=w[0];d<=w[1];d++){var ds=key+'-'+pad(d);if(ds===td)cur=wi;(map[ds]||[]).forEach(function(e){var k=entryDone(e,key)?'done':ds<td?'late':ds===td?'today':'up';if(k==='done')dn++;else if(k==='late')late++;else pend++;es.push({p:e.p,d:ds,k:k});});}
+      var t=dn+late+pend;tot+=t;tdn+=dn;tlate+=late;if(t>max)max=t;return {w:w,dn:dn,late:late,pend:pend,t:t,es:es};
     });
     var h='<div class="sumrow"><div class="sumbox"><span class="ico-w" style="--ib:var(--brand-soft);--ii:var(--brand)">'+svg('cal',17)+'</span><span class="sl">ครบกำหนดทั้งเดือน</span><span class="sv">'+tot+' งาน</span></div><div class="sumbox"><span class="ico-w" style="--ib:var(--done-soft);--ii:var(--done)">'+svg('done',17)+'</span><span class="sl">ส่งแล้ว</span><span class="sv">'+tdn+' งาน</span><span class="delta">'+(tot?Math.round(tdn/tot*100):0)+'%</span></div><div class="sumbox"><span class="ico-w" style="--ib:var(--danger-soft);--ii:var(--danger)">'+svg('flag',17)+'</span><span class="sl">เกินกำหนด</span><span class="sv" style="color:'+(tlate?'var(--danger)':'inherit')+'">'+tlate+' งาน</span></div></div>';
     if(!tot)return h+'<div class="stk-empty"><b>ยังไม่มีงานครบกำหนดใน'+esc(monthLabel(key))+'</b><span class="sub">ใช้ปุ่มลูกศรด้านบนเพื่อดูเดือนอื่น</span></div>';
+    var sel=wSel!=null&&wSel<rows.length?wSel:(cur>=0&&rows[cur].t?cur:rows.findIndex(function(r){return r.t;}));
     var step=max<=5?1:Math.ceil(max/5),top=step*Math.ceil(max/step);
     h+='<div class="wc" role="img" aria-label="'+esc('งานครบกำหนดรายสัปดาห์ '+monthLabel(key)+' รวม '+tot+' งาน ส่งแล้ว '+tdn+' เกินกำหนด '+tlate)+'"><div class="wy">';
     for(var v=top;v>=0;v-=step)h+='<span style="bottom:'+(v/top*100)+'%">'+v+'</span>';
     h+='</div><div class="wplot">';
     for(var v2=0;v2<=top;v2+=step)h+='<i class="wg" style="bottom:'+(v2/top*100)+'%"></i>';
     rows.forEach(function(r,i){
-      h+='<div class="wcol'+(i===cur?' now':'')+'" title="'+esc(r.w[0]+'–'+r.w[1]+' '+mn+': ทั้งหมด '+r.t+' · ส่งแล้ว '+r.dn+' · เกินกำหนด '+r.late+' · ยังไม่ถึงกำหนด '+r.pend)+'"><div class="wbar" style="height:'+(r.t/top*100)+'%">'+(r.t?'<b class="wt">'+r.t+'</b>':'')+(r.pend?'<span class="wp" style="flex:'+r.pend+'"></span>':'')+(r.late?'<span class="wl" style="flex:'+r.late+'"></span>':'')+(r.dn?'<span class="wd" style="flex:'+r.dn+'"></span>':'')+'</div></div>';
+      h+='<button type="button" data-act="wsel" data-i="'+i+'" aria-pressed="'+(i===sel)+'" class="wcol'+(i===cur?' now':'')+(i===sel?' sel':'')+'" title="'+esc(r.w[0]+'–'+r.w[1]+' '+mn+': ทั้งหมด '+r.t+' · ส่งแล้ว '+r.dn+' · เกินกำหนด '+r.late+' · ยังไม่ถึงกำหนด '+r.pend)+'"><div class="wbar" style="height:'+(r.t/top*100)+'%">'+(r.t?'<b class="wt">'+r.t+'</b>':'')+(r.pend?'<span class="wp" style="flex:'+r.pend+'"></span>':'')+(r.late?'<span class="wl" style="flex:'+r.late+'"></span>':'')+(r.dn?'<span class="wd" style="flex:'+r.dn+'"></span>':'')+'</div></button>';
     });
-    h+='</div><div class="wx">'+rows.map(function(r,i){return '<span'+(i===cur?' class="now"':'')+'><b>สัปดาห์ '+(i+1)+'</b>'+r.w[0]+'–'+r.w[1]+' '+mn+'</span>';}).join('')+'</div></div>';
+    h+='</div><div class="wx">'+rows.map(function(r,i){return '<span class="'+(i===cur?'now':'')+(i===sel?' sel':'')+'" data-act="wsel" data-i="'+i+'"><b>สัปดาห์ '+(i+1)+'</b>'+r.w[0]+'–'+r.w[1]+' '+mn+'</span>';}).join('')+'</div></div>';
     h+='<div class="vleg"><span><i style="background:var(--done)"></i>ส่งแล้ว</span><span><i style="background:var(--danger)"></i>เกินกำหนด</span><span><i style="background:var(--g-blue)"></i>ยังไม่ถึงกำหนด</span>'+(cur>=0?'<span><i style="background:none;border:1.5px solid var(--brand)"></i>สัปดาห์นี้</span>':'')+'</div>';
-    return h;
+    var R=rows[sel];
+    h+='<div class="wlist"><div class="wlh"><b>สัปดาห์ '+(sel+1)+'</b><span>'+R.w[0]+'–'+R.w[1]+' '+mn+' · '+R.t+' งาน'+(R.dn?' · ส่งแล้ว '+R.dn:'')+'</span><span class="wlhint">กดแท่งกราฟเพื่อดูสัปดาห์อื่น</span></div>';
+    if(!R.es.length)h+='<div class="wlempty">ไม่มีงานครบกำหนดในสัปดาห์นี้</div>';
+    var KO={late:0,today:1,up:2,done:3};
+    R.es.sort(function(x,y){return x.d<y.d?-1:x.d>y.d?1:KO[x.k]-KO[y.k]||ordSort(x.p,y.p);}).forEach(function(e){
+      var p=e.p,id=esc(p.id),dt=new Date(e.d+'T00:00:00'),dn=e.k==='done';
+      h+='<div class="uprow cb-'+p.category+(dn?' isdone':'')+'"><div class="updt'+(e.k==='late'?' late':e.k==='today'?' today':'')+'"><b>'+dt.getDate()+'</b><span>'+mn+'</span></div>';
+      h+='<div class="upbody"><button class="upn" type="button" data-act="open" data-id="'+id+'">'+esc(p.name||'(ไม่มีชื่อ)')+'</button><span class="upm"><span class="tag">'+lab(CAT,p.category)+'</span><span class="tstat st-'+(dn?'done':p.status)+'"><i></i>'+lab(ST,dn?'done':p.status)+'</span>'+(p.owner?'<span class="sub">'+esc(p.owner)+'</span>':'')+'</span></div>';
+      h+='<span class="uprel'+(e.k==='late'?' late':e.k==='today'?' soon':'')+'">'+(dn?'ส่งแล้ว':relDay(e.d))+'</span>';
+      h+='<button class="tchk" type="button" data-act="rtoggle" data-id="'+id+'" aria-pressed="'+dn+'" aria-label="'+(dn?'ยกเลิกเสร็จ':'ทำเสร็จแล้ว')+'"'+(ro?' disabled':'')+'>'+ICK+'</button></div>';
+    });
+    return h+'</div>';
   }
   function upcomingHtml(){
     var MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -1557,7 +1585,8 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
     if(!n&&!loading){return h+emptyBox('ยังไม่มีงานในระบบ','เพิ่มงานแรก แล้วภาพรวมจะคำนวณให้ทันที',(ro||!db)?'':'<button class="btn" type="button" data-act="new">'+PLUS+'เพิ่มงาน</button>');}
     var TI=[['all','tClip','งานทั้งหมด',n,'<span class="delta up">เฉลี่ย '+avg+'%</span>','t-all'],['todo','tBox','ต้องทำ',cnt.todo,'','t-todo'],['doing','tSpin','กำลังดำเนินการ',cnt.doing,late?'<span class="delta warn">เกินกำหนด '+late+'</span>':'','t-doing'],['review','tEye','รอตรวจสอบ',cnt.review,'','t-review'],['done','tDone','เสร็จสมบูรณ์',cnt.done,'<span class="delta up">'+(n?Math.round(cnt.done/n*100):0)+'%</span>','t-done']];
     h+='<div class="dtiles">'+TI.map(function(t){return '<button class="tile ctile '+t[5]+'" type="button" data-act="tile" data-s="'+t[0]+'" aria-label="ดู'+t[2]+' '+t[3]+' งาน"><span class="tl"><span class="emo">'+svg(t[1],19,1.6)+'</span><span class="tlt">'+t[2]+'</span></span><div class="tvrow"><b class="tv">'+t[3]+'</b>'+t[4]+'</div></button>';}).join('')+'</div>';
-    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>ไทม์ไลน์กำหนดส่ง · '+esc(monthLabel(chartKey||cycle))+'</h2><div class="mnav sm"><button type="button" data-act="ch-prev" aria-label="เดือนก่อน">'+svg('chevL',15,1.8)+'</button><button type="button" data-act="ch-next" aria-label="เดือนถัดไป">'+svg('chevR',15,1.8)+'</button></div></div>'+tlChart(chartKey||cycle)+'</section>';
+    var cv=chartView==='tl';
+    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>'+(cv?'ไทม์ไลน์กำหนดส่ง':'งานครบกำหนดรายสัปดาห์')+' · '+esc(monthLabel(chartKey||cycle))+'</h2><div class="chr"><div class="segtab sm" role="group" aria-label="มุมมองกราฟ"><button type="button" data-act="chv" data-v="week" aria-pressed="'+(!cv)+'">รายสัปดาห์</button><button type="button" data-act="chv" data-v="tl" aria-pressed="'+cv+'">ไทม์ไลน์</button></div><div class="mnav sm"><button type="button" data-act="ch-prev" aria-label="เดือนก่อน">'+svg('chevL',15,1.8)+'</button><button type="button" data-act="ch-next" aria-label="เดือนถัดไป">'+svg('chevR',15,1.8)+'</button></div></div></div>'+(cv?tlChart(chartKey||cycle):wchart(chartKey||cycle))+'</section>';
     h+='<section class="card"><div class="ch"><h2>ความคืบหน้ารวม</h2><button class="va" type="button" data-act="goto" data-v="kanban">ดูทั้งหมด '+svg('arrow',14)+'</button></div>'+gaugeHtml(cnt,n,avg)+'<div class="hr"></div><div class="gl">';
     CAT.forEach(function(c){
       var l=items.filter(function(p){return p.category===c[0];}),d=l.filter(function(p){return p.status==='done';}).length;
@@ -2250,7 +2279,9 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
     }
     else if(act==='tile'){var ts=a.getAttribute('data-s');fStat=ts;fCat='all';fPri='all';boardMode='table';try{localStorage.setItem('pt-board','table');}catch(x){}go('kanban');}
     else if(act==='subt'){var sid=a.getAttribute('data-id');if(subClosed[sid])delete subClosed[sid];else subClosed[sid]=1;try{localStorage.setItem('pt-subclosed',JSON.stringify(subClosed));}catch(x){}render(true);}
-    else if(act==='ch-prev'||act==='ch-next'){chartKey=addMonth(chartKey||cycle,act==='ch-prev'?-1:1);render(true);}
+    else if(act==='wsel'){wSel=+a.getAttribute('data-i');render(true);}
+    else if(act==='chv'){chartView=a.getAttribute('data-v');try{localStorage.setItem('pt-chartv',chartView);}catch(x){}render(true);}
+    else if(act==='ch-prev'||act==='ch-next'){wSel=null;chartKey=addMonth(chartKey||cycle,act==='ch-prev'?-1:1);render(true);}
     else if(act==='cal-mode'){calMode=a.getAttribute('data-m');render(true);}
     else if(act==='lk-change'||act==='lk-on'){lockMode='change';pinBuf='';pinFirst='';lkErr('');renderLock();}
     else if(act==='lk-off'){if(!db)return;lockCfg=Object.assign({},lockCfg,{enabled:false});db.doc('settings/lock').set(Object.assign({},lockCfg,{updatedAt:Date.now()})).catch(handleErr);toast('ปิดโหมดส่วนตัวแล้ว');renderLock();render(true);}
