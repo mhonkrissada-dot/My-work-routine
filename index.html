@@ -1225,6 +1225,9 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   function monthKeyOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1);}
   function monthLabel(k){var a=k.split('-');try{return new Date(+a[0],+a[1]-1,1).toLocaleDateString('th-TH',{month:'long',year:'numeric'});}catch(e){return k;}}
   function addMonth(k,n){var a=k.split('-'),d=new Date(+a[0],+a[1]-1+n,1);return monthKeyOf(d);}
+  function rOff(p){return p&&p.category==='routine'&&p.dueDay&&p.dueDay<=7?1:0;}
+  function recCycle(p,key){return key===addMonth(cycle,rOff(p));}
+  function recDone(p,key){var dm=addMonth(cycle,rOff(p));if(key===dm)return p.status==='done';if(key>dm)return false;var c=addMonth(key,-rOff(p)),h=(p.history||[]).filter(function(x){return x.cycle===c;}).pop();return h?h.status==='done':true;}
   function dateIn(k,day){var a=k.split('-'),last=new Date(+a[0],+a[1],0).getDate();return k+'-'+pad(Math.min(day,last));}
 
   /* ---------- state ---------- */
@@ -1260,7 +1263,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   }
   function dueOf(p){
     if(p.due)return p.due;
-    if(p.category==='routine'&&p.dueDay)return dateIn(cycle,p.dueDay);
+    if(p.category==='routine'&&p.dueDay)return dateIn(addMonth(cycle,rOff(p)),p.dueDay);
     return '';
   }
   function isLate(p){var d=dueOf(p);return !!d&&p.status!=='done'&&dayDiff(d)<0;}
@@ -1481,7 +1484,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     var a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),map=calMap(key);
     var due=[],max=0,tot=0,tdone=0;
     for(var d=1;d<=dim;d++){
-      var es=map[key+'-'+pad(d)]||[],dn=es.filter(function(e){return e.p.status==='done'&&(!e.rec||key===cycle);}).length;
+      var es=map[key+'-'+pad(d)]||[],dn=es.filter(function(e){return e.rec?recDone(e.p,key):e.p.status==='done';}).length;
       due.push([es.length-dn,dn]);tot+=es.length;tdone+=dn;if(es.length>max)max=es.length;
     }
     var step=max<=4?1:Math.ceil(max/4),top=Math.max(1,step*Math.ceil(max/step));
@@ -1540,7 +1543,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   }
   function startOf(p){
     if(p.start)return p.start;
-    if(p.category==='routine'&&p.startDay&&p.dueDay&&!p.due){return p.startDay<=p.dueDay?dateIn(cycle,p.startDay):dateIn(addMonth(cycle,-1),p.startDay);}
+    if(p.category==='routine'&&p.startDay&&p.dueDay&&!p.due){var dm=addMonth(cycle,rOff(p));return p.startDay<=p.dueDay?dateIn(dm,p.startDay):dateIn(addMonth(dm,-1),p.startDay);}
     return '';
   }
   var subClosed={};try{subClosed=JSON.parse(localStorage.getItem('pt-subclosed')||'{}')||{};}catch(e){}
@@ -1721,7 +1724,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     l.forEach(function(p){
       var pr=prog(p),isDone=p.status==='done',id=esc(p.id);
       h+='<div class="rrow'+(isDone?' done':'')+'"><button class="chk" type="button" data-act="rtoggle" data-id="'+id+'" aria-pressed="'+isDone+'" aria-label="ทำเสร็จแล้ว"'+dis+'>'+ICK+'</button>';
-      h+='<button class="rmain" type="button" data-act="open" data-id="'+id+'"><span class="rn">'+esc(p.name||'(ไม่มีชื่อ)')+'</span><span class="rm">'+(p.dueDay&&!p.due?'<span>ทุกวันที่ '+p.dueDay+'</span>':'')+dueText(p)+(p.tasks.length?'<span>งานย่อย '+p.tasks.filter(function(t){return t.done;}).length+'/'+p.tasks.length+'</span>':'')+'<span>'+lab(PRI,p.priority)+'</span></span></button>';
+      h+='<button class="rmain" type="button" data-act="open" data-id="'+id+'"><span class="rn">'+esc(p.name||'(ไม่มีชื่อ)')+'</span><span class="rm">'+(p.dueDay&&!p.due?'<span>'+(rOff(p)?'ส่งต้นเดือนถัดไป วันที่ '+p.dueDay:'ทุกวันที่ '+p.dueDay)+'</span>':'')+dueText(p)+(p.tasks.length?'<span>งานย่อย '+p.tasks.filter(function(t){return t.done;}).length+'/'+p.tasks.length+'</span>':'')+'<span>'+lab(PRI,p.priority)+'</span></span></button>';
       h+='<div class="rprog">'+bar(pr,isDone?'var(--done)':'')+'<span class="pct">'+pr+'%</span></div>';
       h+='<div class="rres">'+stPill(p.status)+'</div></div>';
       h+=subList(p);
@@ -1823,12 +1826,12 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     filtered().forEach(function(p){
       var d='',rec=false;
       if(p.due){if(p.due.slice(0,7)===key)d=p.due;}
-      else if(p.category==='routine'&&p.dueDay){d=dateIn(key,p.dueDay);rec=true;}
+      else if(p.category==='routine'&&p.dueDay){var dm=addMonth(cycle,rOff(p));if(key>=dm||(p.history||[]).some(function(x){return x.cycle===addMonth(key,-rOff(p));})){d=dateIn(key,p.dueDay);rec=true;}}
       if(d)(map[d]=map[d]||[]).push({p:p,rec:rec});
     });
     return map;
   }
-  function entryDone(e,key){return e.p.status==='done'&&(!e.rec||key===cycle);}
+  function entryDone(e,key){return e.rec?recDone(e.p,key):e.p.status==='done';}
   function calMap2(key){
     var map={},a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),first=key+'-01',last=key+'-'+pad(dim);
     function push(d,e){(map[d]=map[d]||[]).push(e);}
@@ -1876,7 +1879,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     for(var d=1;d<=dim;d++){
       var ds=calKey+'-'+pad(d),es=map[ds]||[],wd=(first+d-1)%7;
       h+='<button class="cell'+(wd===0||wd===6?' we':'')+(ds===today?' today':'')+(ds===selDay?' sel':'')+'" type="button" data-act="day" data-d="'+ds+'" aria-label="วันที่ '+d+' มี '+es.length+' งาน"><span class="dn">'+d+'</span><span class="cws">';
-      es.slice(0,3).forEach(function(e){h+='<span class="cc k-'+e.k+' cb-'+e.p.category+((e.p.status==='done'&&(!e.rec||key4cal===cycle))?' done':'')+'" title="'+esc(KLAB[e.k]+' · '+(e.p.name||''))+'"><span>'+(e.k==='mid'?'':ico(KICO[e.k],11,1,'currentColor')+' ')+(e.k==='mid'?'&nbsp;':esc(e.p.name||'(ไม่มีชื่อ)'))+'</span></span>';});
+      es.slice(0,3).forEach(function(e){h+='<span class="cc k-'+e.k+' cb-'+e.p.category+((e.rec?recDone(e.p,key4cal):e.p.status==='done')?' done':'')+'" title="'+esc(KLAB[e.k]+' · '+(e.p.name||''))+'"><span>'+(e.k==='mid'?'':ico(KICO[e.k],11,1,'currentColor')+' ')+(e.k==='mid'?'&nbsp;':esc(e.p.name||'(ไม่มีชื่อ)'))+'</span></span>';});
       if(es.length>3)h+='<span class="more">+'+(es.length-3)+' งาน</span>';
       h+='</span></button>';
     }
