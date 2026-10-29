@@ -1049,6 +1049,10 @@ button.wcol:hover .wbar{filter:brightness(.94)}
 .wlempty{padding:16px 2px;color:var(--muted);font-size:13px}
 .uprow.isdone .upn{color:var(--muted);text-decoration:line-through}
 @media (max-width:640px){.wlh .wlhint{display:none}}
+
+.tchk{border-radius:5px!important}
+.tchk[aria-pressed="true"]{border-radius:5px!important}
+.chk{border-radius:5px!important}
 </style>
 
 <div class="frame">
@@ -1099,7 +1103,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
   var STG=[['negotiate','เจรจา'],['contract','ทำสัญญา'],['staffing','จัดกำลังพล'],['ready','พร้อมให้บริการ']];
   var LT=[['structure','โครงสร้างองค์กร'],['policy','กฎระเบียบ'],['order','คำสั่งภายใน'],['staff','เปลี่ยนแปลงกำลังพล'],['transfer','โยกย้ายหน่วยงาน'],['training','อบรมประจำปี'],['complaint','ร้องเรียน / เคสสำคัญ'],['contractor','ปรับเปลี่ยนบริษัทรปภ.'],['newsite','เพิ่มโครงการที่รับบริหาร']];
   var REM=[[-1,'ไม่ต้องแจ้งเตือน'],[0,'แจ้งในวันครบกำหนด'],[1,'แจ้งล่วงหน้า 1 วัน'],[3,'แจ้งล่วงหน้า 3 วัน'],[7,'แจ้งล่วงหน้า 7 วัน']];
-  var VIEWS=[['dash','ภาพรวม'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','รายการงานทั้งหมด'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
+  var VIEWS=[['dash','ภาพรวม'],['clist','เช็กลิสต์งาน'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','รายการงานทั้งหมด'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
   var PALS=[["mist", "Corporate Navy", "ทางการ มาตรฐานสากล (ค่าเริ่มต้น)", ["#F3F5F8", "#FFFFFF", "#CBD2DB", "#1F4E8C", "#1F3A5F"]], ["royal", "Royal Blue", "องค์กร น่าเชื่อถือ", ["#2563EB", "#60A5FA", "#DBEAFE", "#F1F5F9", "#FFFFFF"]], ["navy", "Navy & White", "มืออาชีพ ทันสมัย", ["#0F1E3A", "#1E2F4F", "#A7B6D0", "#E3EAF3", "#FFFFFF"]], ["softblue", "Soft Blue", "โปร่ง สบายตา", ["#8DB4D6", "#D6E6F2", "#F2F7FB", "#FFFFFF", "#2E4A63"]], ["emerald", "Emerald", "สดชื่น สุขภาพ", ["#10B981", "#34D399", "#A7F3D0", "#ECFDF5", "#FFFFFF"]], ["teal", "Teal & Dark", "ทันสมัย สายเทค", ["#0D9488", "#2DD4BF", "#0F766E", "#1F2937", "#111827"]], ["orange", "Orange & Navy", "กระตือรือร้น โดดเด่น", ["#F97316", "#FDBA74", "#0F172A", "#334155", "#F8FAFC"]], ["purple", "Purple & Pink", "สร้างสรรค์ สดใส", ["#7C3AED", "#A78BFA", "#EC4899", "#F9A8D4", "#FCE7F3"]], ["yellow", "Yellow & Gray", "อบอุ่น อ่านง่าย", ["#FACC15", "#FDE68A", "#1F2937", "#6B7280", "#F3F4F6"]], ["beige", "Beige & Brown", "อบอุ่น เป็นกันเอง", ["#F3E9DD", "#E6D5C1", "#A67C52", "#6B4E3D", "#FFFFFF"]], ["sage", "Sage & Cream", "สงบ เป็นธรรมชาติ", ["#A8B5A0", "#C7D3C1", "#F2F5EF", "#FAFAF7", "#3F5039"]], ["dusty", "Dusty Pink & Gray", "นุ่มนวล ละมุน", ["#D7B1B7", "#EACCC5", "#D8D8D8", "#6F6F6F", "#FFFFFF"]], ["rose", "Rose & Cream", "หวาน มีสไตล์", ["#F43F5E", "#FB7185", "#FFF1F2", "#FEF3C7", "#FFFBEB"]], ["noir", "Black & Silver", "หรูหรา เฉียบคม", ["#0D0D0D", "#2B2B2B", "#8E8E8E", "#E6E6E6", "#FFFFFF"]], ["green", "Green & Black", "ปลอดภัย การเงิน", ["#22C55E", "#4ADE80", "#16A34A", "#0D1117", "#1F2937"]]];
   var pref={pal:'mist',mode:'light'};
   try{var _p=JSON.parse(localStorage.getItem('pt-prefs2')||'{}');if(_p.pal)pref.pal=_p.pal;}catch(e){}
@@ -1126,6 +1130,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     projects:'<path d="M2 14V6l6-3 6 3v8M6 14v-4h4v4"/>',
     logs:'<path d="M8 1.8l5.5 2.2v4c0 3.4-2.4 5.6-5.5 6.8-3.1-1.2-5.5-3.4-5.5-6.8V4z"/><path d="M5.8 8.2l1.6 1.6 3-3.2"/>',
     kanban:'<rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M2 6h12M2 9.5h12M6 6v7.5"/>',
+    clist:'<rect x="2" y="2" width="5" height="5" rx="1"/><path d="M3.3 4.6l1 1 1.6-1.9M9.5 4.5H14M9.5 11.5H14"/><rect x="2" y="9" width="5" height="5" rx="1"/>',
     calendar:'<rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/>',
     settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/>'
   };
@@ -1548,6 +1553,14 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     if((a.createdAt||0)!==(b.createdAt||0))return (a.createdAt||0)-(b.createdAt||0);
     return PR_RANK[a.priority]-PR_RANK[b.priority];
   }
+  function clistHtml(){
+    var h='<div class="page-head"><div><h1>เช็กลิสต์งาน</h1><p class="sub">รอบงานรูทีน '+esc(monthLabel(cycle))+' · เรียงตามลำดับงานรูทีน ติ๊กเมื่อทำเสร็จ</p></div></div>';
+    var open=items.slice().sort(function(a,b){var da=dueOf(a)||'9999',db_=dueOf(b)||'9999';if(da!==db_)return da<db_?-1:1;return PR_RANK[a.priority]-PR_RANK[b.priority];});
+    h+='<section class="card"><div class="ch"><h2 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+ico('folder',20)+'งานทั้งหมด <span class="sub" style="font-weight:500">'+open.filter(function(p){return p.status==='done';}).length+'/'+open.length+' เสร็จแล้ว · เรียงตามลำดับงานรูทีน</span></h2></div>';
+    h+=open.length?taskList(open,999):'<p class="sub">'+ico('spark',22)+' ไม่มีงานค้าง</p>';
+    h+='</section>';
+    return h;
+  }
   function taskList(l,max){
     var h='<div class="tlist">',groups=['routine','general','company','project'],n=0;
     groups.forEach(function(c){
@@ -1594,10 +1607,6 @@ button.wcol:hover .wbar{filter:brightness(.94)}
       h+='<div><i class="dot" style="--c:'+({routine:'var(--gg-doing)',company:'var(--gg-done)',project:'var(--gg-review)',general:'var(--gg-red)'})[c[0]]+'"></i><span class="lab">'+c[1]+' ('+d+'/'+l.length+') · '+a+'%</span><span class="'+(l.length&&d===l.length?'ok':'part')+'">'+svg(l.length&&d===l.length?'check':'half',18)+'</span></div>';
     });
     h+='</div></section></div>';
-    var open=items.slice().sort(function(a,b){var da=dueOf(a)||'9999',db_=dueOf(b)||'9999';if(da!==db_)return da<db_?-1:1;return PR_RANK[a.priority]-PR_RANK[b.priority];});
-    h+='<section class="card"><div class="ch"><h2 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+ico('folder',20)+'รายการงาน <span class="sub" style="font-weight:500">'+open.filter(function(p){return p.status==='done';}).length+'/'+open.length+' เสร็จแล้ว · เรียงตามลำดับงานรูทีน</span></h2><button class="va" type="button" data-act="goto" data-v="kanban">ดูทั้งหมด '+svg('arrow',14)+'</button></div>';
-    h+=open.length?taskList(open,60):'<p class="sub">'+ico('spark',22)+' ไม่มีงานค้าง</p>';
-    h+='</section>';
     var act=items.filter(function(p){return p.status==='doing'||p.status==='review';}).sort(function(a,b){
       if(PR_RANK[a.priority]!==PR_RANK[b.priority])return PR_RANK[a.priority]-PR_RANK[b.priority];
       var da=dueOf(a)||'9999',db_=dueOf(b)||'9999';return da<db_?-1:da>db_?1:0;});
@@ -1926,6 +1935,7 @@ button.wcol:hover .wbar{filter:brightness(.94)}
     if(view==='projects')return projectsHtml();
     if(view==='logs')return logsHtml();
     if(view==='kanban')return kanbanHtml();
+    if(view==='clist')return clistHtml();
     if(view==='calendar')return calHtml();
     if(view==='settings')return settingsHtml();
     return dashHtml();
