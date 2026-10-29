@@ -32,34 +32,34 @@ window.claude={use:function(n){return Promise.resolve(n==='db'?db:n==='downloads
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
 <style>[hidden]{display:none!important}
 
 /* Layout: a soft blue-green wash holds one rounded app window — white icon sidebar on the left (horizontal tab strip on phones), light working canvas with white cards on the right. iOS system type; amber primary action; pastel status pills. */
 :root{
-  --wash-1:#F4F3EF; --wash-2:#ECEDEC; --wash-3:#DCE3EA;
-  --panel:#F2F1EC; --surface:#FCFBF9; --surface-2:#F4F3EF; --surface-3:#E9E8E3;
-  --line:#E4E3DE; --line-strong:#D2CFCB;
-  --fg:#2A2A2A; --fg-2:#3F3F3F; --muted:#7D7976;
-  --accent:#3F3F3F; --accent-hi:#2C2C2C; --accent-ink:#F4F3EF; --accent-soft:#E6EEF8;
-  --brand:#5E8FC6; --brand-soft:#E3ECF7;
-  --nav-active:#E6EEF8; --nav-active-ink:#2F4E70;
-  --azure:#9ABDE2; --haze:#B0BFCC; --pebble:#B5B1AE;
-  --todo:#6C4FD6; --todo-soft:#EFEAFD;
-  --doing:#C25A0E; --doing-soft:#FDEBDC;
-  --review:#2C63D2; --review-soft:#E4EDFD;
-  --done:#1E8A4B; --done-soft:#E1F5E7;
-  --p-low:#6B7380; --p-low-soft:#EEF0F3;
-  --p-medium:#2C63D2; --p-medium-soft:#E7EFFD;
-  --p-high:#B76A05; --p-high-soft:#FDF0D5;
-  --p-urgent:#C8331F; --p-urgent-soft:#FDE6E2;
-  --danger:#C8331F; --danger-soft:#FDE6E2;
-  --gg-done:#079FA0; --gg-doing:#023852; --gg-review:#FAC005; --gg-todo:#9FD8C5; --gg-red:#DC2E2F;
-  --g-green:#8FCBB5; --g-blue:#9ABDE2; --g-amber:#E6C98A; --g-purple:#B0BFCC; --g-track:#E9E8E3;
-  --shadow:0 1px 2px rgba(40,38,35,.04),0 4px 14px rgba(40,38,35,.05);
-  --shadow-lg:0 20px 60px rgba(40,38,35,.16);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Sukhumvit Set","Helvetica Neue","Noto Sans Thai","Segoe UI",system-ui,sans-serif;
-  --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Sukhumvit Set","Helvetica Neue","Noto Sans Thai","Segoe UI",system-ui,sans-serif;
+  --wash-1:#F3F5F8; --wash-2:#F3F5F8; --wash-3:#F3F5F8;
+  --panel:#F3F5F8; --surface:#FFFFFF; --surface-2:#FFFFFF; --surface-3:#EEF1F5;
+  --line:#E2E6EC; --line-strong:#CBD2DB;
+  --fg:#111827; --fg-2:#374151; --muted:#5B6575;
+  --accent:#1F3A5F; --accent-hi:#162B47; --accent-ink:#FFFFFF; --accent-soft:#E8EEF6;
+  --brand:#1F4E8C; --brand-soft:#E8EEF6;
+  --nav-active:#E8EEF6; --nav-active-ink:#1F3A5F;
+  --azure:#8DA9CC; --haze:#B0BCCB; --pebble:#9CA3AF;
+  --todo:#5B4BC4; --todo-soft:#EEECFB;
+  --doing:#B45309; --doing-soft:#FEF3E2;
+  --review:#1D4ED8; --review-soft:#E6EEFD;
+  --done:#15803D; --done-soft:#E5F4EA;
+  --p-low:#4B5563; --p-low-soft:#EEF0F3;
+  --p-medium:#1D4ED8; --p-medium-soft:#E6EEFD;
+  --p-high:#B45309; --p-high-soft:#FEF3E2;
+  --p-urgent:#B91C1C; --p-urgent-soft:#FDE8E8;
+  --danger:#B91C1C; --danger-soft:#FDE8E8;
+  --gg-done:#15803D; --gg-doing:#1F3A5F; --gg-review:#D97706; --gg-todo:#94A3B8; --gg-red:#B91C1C;
+  --g-green:#86C19A; --g-blue:#8DA9CC; --g-amber:#E3B86B; --g-purple:#A7B0C0; --g-track:#E5E9EF;
+  --shadow:0 1px 2px rgba(16,24,40,.05);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.14);
+  --font:"Inter","Noto Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI","Sukhumvit Set",system-ui,sans-serif;
+  --font-display:"Inter","Noto Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI","Sukhumvit Set",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){
@@ -930,6 +930,41 @@ body.locked .frame{visibility:hidden}
 .dtiles .tl::after{margin-left:auto;padding-left:0;flex:none}
 .dtiles .tvrow{padding-right:0!important}
 .dtiles .ctile:hover{border-color:var(--tc)!important}
+
+/* ===== Formal layout (full-screen, enterprise) ===== */
+html,body{background:var(--wash-1)!important}
+body{font-size:14.5px;letter-spacing:0}
+.frame{padding:0!important;min-height:100dvh}
+.app{max-width:none!important;margin:0!important;border-radius:0!important;box-shadow:none!important;border:0!important;min-height:100dvh!important;--side-w:248px;background:linear-gradient(to right,var(--surface) calc(var(--side-w) - 1px),var(--line) calc(var(--side-w) - 1px),var(--line) var(--side-w),var(--panel) var(--side-w))!important}
+.app.mini{--side-w:72px}
+.side{max-height:100dvh!important;background:var(--surface)!important;padding:16px 12px!important}
+.main{padding:24px 32px 56px!important}
+.inner{max-width:none!important}
+h1{font-size:22px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:15.5px;font-weight:600;letter-spacing:0}
+.page-head .sub,.sub{color:var(--muted)}
+.navb{border-radius:6px!important;font-size:14px;padding:9px 12px;position:relative}
+.navb:hover{background:var(--surface-3)!important}
+.navb[aria-current="page"]{background:var(--nav-active)!important;border-color:transparent!important;box-shadow:none!important;color:var(--nav-active-ink)!important}
+.navb[aria-current="page"] .ni{color:var(--nav-active-ink)!important}
+.navb[aria-current="page"]::before{content:"";position:absolute;left:-12px;top:6px;bottom:6px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.navb.dm{box-shadow:none!important;background:var(--surface-3)!important;border-color:transparent!important}
+.navb .n{border-radius:4px!important}
+.card,.tile,.ctile,.dtiles .ctile,.rlist,.tblwrap,.cal,.empty,.pcard,.ncard,.sec,.dcard,.tcard,.entry,.sumbox,.thm,.nbox,.note,.att,.menu,.npbox{border-radius:8px!important;box-shadow:none!important}
+.card,.tile,.rlist,.tblwrap,.cal,.pcard,.sec{border:1px solid var(--line)!important;background:var(--surface)!important}
+.dtiles .ctile{background:var(--surface)!important;border:1px solid var(--line)!important}
+.dtiles .ctile:hover{border-color:var(--line-strong)!important}
+.sheet{border-radius:10px!important}
+.btn,.in,.va,.mnav,.segtab,.seg,.x,.ib,.ib2,.steps,.nsubmit,.npv,.toast,.stk-tip{border-radius:6px!important}
+.pill,.tag,.rst,.chk,.cc,.kbd,.cchip,.delta{border-radius:4px!important}
+.btn{box-shadow:none!important;font-weight:500}
+.in{background:var(--surface)!important;border-color:var(--line-strong)!important}
+.in:focus{border-color:var(--brand)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 20%,transparent)!important}
+:focus-visible{outline:2px solid var(--brand)!important;outline-offset:2px}
+.tile .tv,.dtiles .tv{font-weight:600!important;letter-spacing:-.02em}
+.tblwrap table th{text-transform:none;font-weight:600;color:var(--fg-2);background:var(--surface-3)}
+@media (max-width:999px){.app{background:var(--panel)!important}.side{border-bottom:1px solid var(--line)}.main{padding:16px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))!important}.navb[aria-current="page"]::before{display:none}}
+@media (min-width:1600px){.main{padding:28px 40px 64px!important}}
 </style>
 
 <div class="frame">
@@ -980,10 +1015,10 @@ body.locked .frame{visibility:hidden}
   var STG=[['negotiate','เจรจา'],['contract','ทำสัญญา'],['staffing','จัดกำลังพล'],['ready','พร้อมให้บริการ']];
   var LT=[['structure','โครงสร้างองค์กร'],['policy','กฎระเบียบ'],['order','คำสั่งภายใน'],['staff','เปลี่ยนแปลงกำลังพล'],['transfer','โยกย้ายหน่วยงาน'],['training','อบรมประจำปี'],['complaint','ร้องเรียน / เคสสำคัญ'],['contractor','ปรับเปลี่ยนบริษัทรปภ.'],['newsite','เพิ่มโครงการที่รับบริหาร']];
   var REM=[[-1,'ไม่ต้องแจ้งเตือน'],[0,'แจ้งในวันครบกำหนด'],[1,'แจ้งล่วงหน้า 1 วัน'],[3,'แจ้งล่วงหน้า 3 วัน'],[7,'แจ้งล่วงหน้า 7 วัน']];
-  var VIEWS=[['dash','ภาพรวม'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','บอร์ดงาน'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
-  var PALS=[["mist", "Mist & Charcoal", "เรียบ นุ่มตา (ค่าเริ่มต้น)", ["#F4F3EF", "#DFDED9", "#B5B1AE", "#9ABDE2", "#3F3F3F"]], ["royal", "Royal Blue", "องค์กร น่าเชื่อถือ", ["#2563EB", "#60A5FA", "#DBEAFE", "#F1F5F9", "#FFFFFF"]], ["navy", "Navy & White", "มืออาชีพ ทันสมัย", ["#0F1E3A", "#1E2F4F", "#A7B6D0", "#E3EAF3", "#FFFFFF"]], ["softblue", "Soft Blue", "โปร่ง สบายตา", ["#8DB4D6", "#D6E6F2", "#F2F7FB", "#FFFFFF", "#2E4A63"]], ["emerald", "Emerald", "สดชื่น สุขภาพ", ["#10B981", "#34D399", "#A7F3D0", "#ECFDF5", "#FFFFFF"]], ["teal", "Teal & Dark", "ทันสมัย สายเทค", ["#0D9488", "#2DD4BF", "#0F766E", "#1F2937", "#111827"]], ["orange", "Orange & Navy", "กระตือรือร้น โดดเด่น", ["#F97316", "#FDBA74", "#0F172A", "#334155", "#F8FAFC"]], ["purple", "Purple & Pink", "สร้างสรรค์ สดใส", ["#7C3AED", "#A78BFA", "#EC4899", "#F9A8D4", "#FCE7F3"]], ["yellow", "Yellow & Gray", "อบอุ่น อ่านง่าย", ["#FACC15", "#FDE68A", "#1F2937", "#6B7280", "#F3F4F6"]], ["beige", "Beige & Brown", "อบอุ่น เป็นกันเอง", ["#F3E9DD", "#E6D5C1", "#A67C52", "#6B4E3D", "#FFFFFF"]], ["sage", "Sage & Cream", "สงบ เป็นธรรมชาติ", ["#A8B5A0", "#C7D3C1", "#F2F5EF", "#FAFAF7", "#3F5039"]], ["dusty", "Dusty Pink & Gray", "นุ่มนวล ละมุน", ["#D7B1B7", "#EACCC5", "#D8D8D8", "#6F6F6F", "#FFFFFF"]], ["rose", "Rose & Cream", "หวาน มีสไตล์", ["#F43F5E", "#FB7185", "#FFF1F2", "#FEF3C7", "#FFFBEB"]], ["noir", "Black & Silver", "หรูหรา เฉียบคม", ["#0D0D0D", "#2B2B2B", "#8E8E8E", "#E6E6E6", "#FFFFFF"]], ["green", "Green & Black", "ปลอดภัย การเงิน", ["#22C55E", "#4ADE80", "#16A34A", "#0D1117", "#1F2937"]]];
+  var VIEWS=[['dash','ภาพรวม'],['routine','งานรูทีน & โปรเจกต์'],['projects','เพิ่มโครงการที่รับบริหาร'],['logs','ปรับเปลี่ยนบริษัทรปภ.'],['kanban','รายการงานทั้งหมด'],['calendar','ปฏิทิน'],['settings','ตั้งค่า']];
+  var PALS=[["mist", "Corporate Navy", "ทางการ มาตรฐานสากล (ค่าเริ่มต้น)", ["#F3F5F8", "#FFFFFF", "#CBD2DB", "#1F4E8C", "#1F3A5F"]], ["royal", "Royal Blue", "องค์กร น่าเชื่อถือ", ["#2563EB", "#60A5FA", "#DBEAFE", "#F1F5F9", "#FFFFFF"]], ["navy", "Navy & White", "มืออาชีพ ทันสมัย", ["#0F1E3A", "#1E2F4F", "#A7B6D0", "#E3EAF3", "#FFFFFF"]], ["softblue", "Soft Blue", "โปร่ง สบายตา", ["#8DB4D6", "#D6E6F2", "#F2F7FB", "#FFFFFF", "#2E4A63"]], ["emerald", "Emerald", "สดชื่น สุขภาพ", ["#10B981", "#34D399", "#A7F3D0", "#ECFDF5", "#FFFFFF"]], ["teal", "Teal & Dark", "ทันสมัย สายเทค", ["#0D9488", "#2DD4BF", "#0F766E", "#1F2937", "#111827"]], ["orange", "Orange & Navy", "กระตือรือร้น โดดเด่น", ["#F97316", "#FDBA74", "#0F172A", "#334155", "#F8FAFC"]], ["purple", "Purple & Pink", "สร้างสรรค์ สดใส", ["#7C3AED", "#A78BFA", "#EC4899", "#F9A8D4", "#FCE7F3"]], ["yellow", "Yellow & Gray", "อบอุ่น อ่านง่าย", ["#FACC15", "#FDE68A", "#1F2937", "#6B7280", "#F3F4F6"]], ["beige", "Beige & Brown", "อบอุ่น เป็นกันเอง", ["#F3E9DD", "#E6D5C1", "#A67C52", "#6B4E3D", "#FFFFFF"]], ["sage", "Sage & Cream", "สงบ เป็นธรรมชาติ", ["#A8B5A0", "#C7D3C1", "#F2F5EF", "#FAFAF7", "#3F5039"]], ["dusty", "Dusty Pink & Gray", "นุ่มนวล ละมุน", ["#D7B1B7", "#EACCC5", "#D8D8D8", "#6F6F6F", "#FFFFFF"]], ["rose", "Rose & Cream", "หวาน มีสไตล์", ["#F43F5E", "#FB7185", "#FFF1F2", "#FEF3C7", "#FFFBEB"]], ["noir", "Black & Silver", "หรูหรา เฉียบคม", ["#0D0D0D", "#2B2B2B", "#8E8E8E", "#E6E6E6", "#FFFFFF"]], ["green", "Green & Black", "ปลอดภัย การเงิน", ["#22C55E", "#4ADE80", "#16A34A", "#0D1117", "#1F2937"]]];
   var pref={pal:'mist',mode:'light'};
-  try{var _p=JSON.parse(localStorage.getItem('pt-prefs')||'{}');if(_p.pal)pref.pal=_p.pal;}catch(e){}
+  try{var _p=JSON.parse(localStorage.getItem('pt-prefs2')||'{}');if(_p.pal)pref.pal=_p.pal;}catch(e){}
   try{var _sm=sessionStorage.getItem('pt-mode');if(_sm==='dark'||_sm==='light')pref.mode=_sm;}catch(e){}
   function applyPrefs(){
     var r=document.documentElement;
@@ -991,7 +1026,7 @@ body.locked .frame{visibility:hidden}
     if(pref.mode==='light'||pref.mode==='dark')r.setAttribute('data-theme',pref.mode);else if(r.getAttribute('data-pt-mode'))r.removeAttribute('data-theme');
     r.setAttribute('data-pt-mode',pref.mode);
   }
-  function savePrefs(){try{localStorage.setItem('pt-prefs',JSON.stringify({pal:pref.pal}));sessionStorage.setItem('pt-mode',pref.mode);}catch(e){}applyPrefs();}
+  function savePrefs(){try{localStorage.setItem('pt-prefs2',JSON.stringify({pal:pref.pal}));sessionStorage.setItem('pt-mode',pref.mode);}catch(e){}applyPrefs();}
   var applying=false;
   try{new MutationObserver(function(){if(applying)return;var want=pref.mode==='dark'?'dark':'light';if(document.documentElement.getAttribute('data-theme')!==want){applying=true;document.documentElement.setAttribute('data-theme',want);applying=false;}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});}catch(e){}
   applyPrefs();
@@ -1006,7 +1041,7 @@ body.locked .frame{visibility:hidden}
     routine:'<path d="M3 8.5l3 3 7-7"/>',
     projects:'<path d="M2 14V6l6-3 6 3v8M6 14v-4h4v4"/>',
     logs:'<path d="M8 1.8l5.5 2.2v4c0 3.4-2.4 5.6-5.5 6.8-3.1-1.2-5.5-3.4-5.5-6.8V4z"/><path d="M5.8 8.2l1.6 1.6 3-3.2"/>',
-    kanban:'<rect x="2" y="2" width="3.5" height="12" rx="1"/><rect x="6.5" y="2" width="3.5" height="8" rx="1"/><rect x="11" y="2" width="3" height="10" rx="1"/>',
+    kanban:'<rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M2 6h12M2 9.5h12M6 6v7.5"/>',
     calendar:'<rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/>',
     settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/>'
   };
@@ -1074,8 +1109,8 @@ body.locked .frame{visibility:hidden}
   var CAT_EMO={routine:ico('repeat',16,1),company:ico('shield',16,1),project:ico('building',16,1),general:ico('rocket',16,1)};
   var PRI_EMO={low:'<i class="pdot pr-low"></i>',medium:'<i class="pdot pr-medium"></i>',high:'<i class="pdot pr-high"></i>',urgent:'<i class="pdot pr-urgent"></i>'};
   function catChip(c){return '<span class="cchip cc-'+c+'">'+CAT_EMO[c]+' '+lab(CAT,c)+'</span>';}
-  var boardMode='kanban';
-  try{var bm=localStorage.getItem('pt-board');if(bm==='table'||bm==='kanban')boardMode=bm;}catch(e){}
+  var boardMode='table';
+  
   var ICX='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
   var ICK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5"/></svg>';
 
@@ -1575,7 +1610,7 @@ body.locked .frame{visibility:hidden}
     return '<div class="filters"><label for="f-cat">หมวดงาน <select id="f-cat" class="in"><option value="all">ทั้งหมด</option>'+opts(CAT,fCat)+'</select></label><label for="f-pri">ความสำคัญ <select id="f-pri" class="in"><option value="all">ทั้งหมด</option>'+opts(PRI,fPri)+'</select></label><label for="f-st">สถานะ <select id="f-st" class="in"><option value="all">ทั้งหมด</option>'+opts(ST,fStat)+'</select></label></div>';
   }
   function kanbanHtml(){
-    var h='<div class="page-head"><div><h1>บอร์ดงาน</h1><p class="sub">'+(boardMode==='table'?'แตะแถวเพื่อเปิดรายละเอียด':'ลากการ์ดไปวางในคอลัมน์เพื่อเปลี่ยนสถานะ หรือเลือกสถานะที่ท้ายการ์ด')+'</p></div><div class="segtab" role="group" aria-label="มุมมอง"><button type="button" data-act="bmode" data-m="table" aria-pressed="'+(boardMode==='table')+'">'+svg('table',15)+'ตาราง</button><button type="button" data-act="bmode" data-m="kanban" aria-pressed="'+(boardMode==='kanban')+'">'+svg('kanban',15)+'คัมบัง</button></div></div>'+filterBar();
+    var h='<div class="page-head"><div><h1>รายการงานทั้งหมด</h1><p class="sub">เรียงตามสถานะและลำดับงานรูทีน · คลิกแถวเพื่อเปิดรายละเอียด</p></div></div>'+filterBar();
     var l=filtered();
     var sorter=function(a,b){
       var ra=a.category==='routine'?0:1,rb=b.category==='routine'?0:1;if(ra!==rb)return ra-rb;
