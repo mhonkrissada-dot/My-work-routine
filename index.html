@@ -1008,6 +1008,32 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
 .wx b{font-size:12.5px;font-weight:600;color:var(--fg-2)}
 .wx .now b{color:var(--brand)}
 @media (max-width:640px){.wc{grid-template-rows:180px auto}.wx span{font-size:10.5px}.wx b{font-size:11px}}
+
+.tlc{margin-top:8px;--lw:200px}
+.tlr{display:grid;grid-template-columns:var(--lw) minmax(0,1fr);align-items:center;min-height:34px}
+.tlt{position:relative;height:100%;min-height:34px}
+.tlax{min-height:22px;border-bottom:1px solid var(--line)}
+.tlax .tlt{min-height:22px}
+.tlax .tlt span{position:absolute;top:2px;transform:translateX(-50%);font-size:11.5px;color:var(--muted)}
+.tlbody{position:relative}
+.tlov{position:absolute;inset:0;display:grid;grid-template-columns:var(--lw) minmax(0,1fr);pointer-events:none}
+.tlov i{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.tlnow{position:absolute;top:0;bottom:0;width:0;border-left:1.5px dashed var(--brand);z-index:1}
+.tlnow em{position:absolute;bottom:-20px;left:0;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:600;color:var(--brand);white-space:nowrap}
+.tlbody .tlr{border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+.tlbody .tlr:hover{background:color-mix(in srgb,var(--surface-3) 60%,transparent)}
+.tln{background:none;border:0;padding:0 12px 0 2px;text-align:left;font-size:13px;font-weight:500;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tln:hover{color:var(--brand);text-decoration:underline}
+.tlt:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:color-mix(in srgb,var(--line) 70%,transparent)}
+.tlax .tlt:before{display:none}
+.tld{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:99px;border:2px solid var(--surface);padding:0;display:grid;place-items:center;color:#fff;z-index:2;box-shadow:0 0 0 1px var(--c)}
+.tld svg{width:8px;height:8px}
+.tld:hover{transform:scale(1.25)}
+.tld.s-up{--c:var(--brand);background:var(--brand)}.tld.s-today{--c:var(--doing);background:var(--doing)}.tld.s-late{--c:var(--danger);background:var(--danger)}.tld.s-done{--c:var(--done);background:var(--done)}
+.tlv{position:absolute;top:50%;margin-top:-8px;transform:translateX(12px);font-size:11px;font-weight:600;color:var(--muted);pointer-events:none}
+.tlv.s-late{color:var(--danger)}.tlv.s-today{color:var(--doing)}
+.tlc+.vleg{margin-top:28px}
+@media (max-width:640px){.tlc{--lw:118px}.tln{font-size:12px;padding-right:8px}.tlv{display:none}}
 </style>
 
 <div class="frame">
@@ -1392,6 +1418,27 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
     if(rest>0)h+='<button class="tmore" type="button" data-act="goto" data-v="calendar">ดูอีก '+rest+' งานในปฏิทิน '+svg('arrow',13)+'</button>';
     return h;
   }
+  function tlChart(key){
+    var a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),map=calMap(key),rows=[];
+    Object.keys(map).forEach(function(d){map[d].forEach(function(e){rows.push({p:e.p,d:d,day:+d.slice(8),done:entryDone(e,key)});});});
+    var CO={routine:0,general:1,company:2,project:3};
+    rows.sort(function(x,y){var c=(CO[x.p.category]||0)-(CO[y.p.category]||0);return c||ordSort(x.p,y.p)||(x.d<y.d?-1:1);});
+    var tot=rows.length,dn=rows.filter(function(r){return r.done;}).length,late=rows.filter(function(r){return !r.done&&dayDiff(r.d)<0;}).length;
+    var h='<div class="upsum"><div class="upbox up-week"><span class="ul">ครบกำหนดทั้งเดือน</span><b class="uv">'+tot+'</b><span class="uu">งาน</span></div><div class="upbox" style="--uc:var(--done)"><span class="ul">ส่งแล้ว</span><b class="uv">'+dn+'</b><span class="uu">งาน · '+(tot?Math.round(dn/tot*100):0)+'%</span></div><div class="upbox up-late"><span class="ul">เกินกำหนด</span><b class="uv">'+late+'</b><span class="uu">งาน</span></div></div>';
+    if(!tot)return h+'<div class="stk-empty"><b>ยังไม่มีงานครบกำหนดใน'+esc(monthLabel(key))+'</b><span class="sub">ใช้ปุ่มลูกศรด้านบนเพื่อดูเดือนอื่น</span></div>';
+    var td=monthKeyOf(new Date())===key?new Date().getDate():0,pos=function(d){return ((d-.5)/dim*100).toFixed(3)+'%';};
+    var ticks=[1,5,10,15,20,25,dim];
+    h+='<div class="tlc" style="--dim:'+dim+'" role="img" aria-label="'+esc('ไทม์ไลน์กำหนดส่ง '+monthLabel(key)+' '+tot+' งาน ส่งแล้ว '+dn+' งาน')+'">';
+    h+='<div class="tlr tlax"><span></span><div class="tlt">'+ticks.map(function(t){return '<span style="left:'+pos(t)+'">'+t+'</span>';}).join('')+'</div></div>';
+    h+='<div class="tlbody"><div class="tlov"><span></span><div class="tlt">'+ticks.map(function(t){return '<i style="left:'+pos(t)+'"></i>';}).join('')+(td?'<b class="tlnow" style="left:'+pos(td)+'"><em>วันนี้</em></b>':'')+'</div></div>';
+    rows.forEach(function(r){
+      var st=r.done?'done':dayDiff(r.d)<0?'late':dayDiff(r.d)===0?'today':'up',id=esc(r.p.id);
+      var tip=(r.p.name||'')+' · '+fmtDate(r.d)+' · '+(r.done?'ส่งแล้ว':relDay(r.d));
+      h+='<div class="tlr"><button class="tln" type="button" data-act="open" data-id="'+id+'" title="'+esc(r.p.name||'')+'">'+esc(r.p.name||'(ไม่มีชื่อ)')+'</button><div class="tlt"><button class="tld s-'+st+'" type="button" data-act="open" data-id="'+id+'" style="left:'+pos(r.day)+'" title="'+esc(tip)+'" aria-label="'+esc(tip)+'">'+(r.done?ICK:'')+'</button><span class="tlv s-'+st+'" style="left:'+pos(r.day)+'">'+r.day+'</span></div></div>';
+    });
+    h+='</div></div><div class="vleg"><span><i style="background:var(--brand)"></i>รอส่ง</span><span><i style="background:var(--doing)"></i>ครบวันนี้</span><span><i style="background:var(--danger)"></i>เกินกำหนด</span><span><i style="background:var(--done)"></i>ส่งแล้ว</span></div>';
+    return h;
+  }
   function vchart(key){
     var a=key.split('-'),dim=new Date(+a[0],+a[1],0).getDate(),map=calMap(key);
     var due=[],max=0,tot=0,tdone=0;
@@ -1510,7 +1557,7 @@ h2{font-size:15.5px;font-weight:600;letter-spacing:0}
     if(!n&&!loading){return h+emptyBox('ยังไม่มีงานในระบบ','เพิ่มงานแรก แล้วภาพรวมจะคำนวณให้ทันที',(ro||!db)?'':'<button class="btn" type="button" data-act="new">'+PLUS+'เพิ่มงาน</button>');}
     var TI=[['all','tClip','งานทั้งหมด',n,'<span class="delta up">เฉลี่ย '+avg+'%</span>','t-all'],['todo','tBox','ต้องทำ',cnt.todo,'','t-todo'],['doing','tSpin','กำลังดำเนินการ',cnt.doing,late?'<span class="delta warn">เกินกำหนด '+late+'</span>':'','t-doing'],['review','tEye','รอตรวจสอบ',cnt.review,'','t-review'],['done','tDone','เสร็จสมบูรณ์',cnt.done,'<span class="delta up">'+(n?Math.round(cnt.done/n*100):0)+'%</span>','t-done']];
     h+='<div class="dtiles">'+TI.map(function(t){return '<button class="tile ctile '+t[5]+'" type="button" data-act="tile" data-s="'+t[0]+'" aria-label="ดู'+t[2]+' '+t[3]+' งาน"><span class="tl"><span class="emo">'+svg(t[1],19,1.6)+'</span><span class="tlt">'+t[2]+'</span></span><div class="tvrow"><b class="tv">'+t[3]+'</b>'+t[4]+'</div></button>';}).join('')+'</div>';
-    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>งานครบกำหนดรายสัปดาห์ · '+esc(monthLabel(chartKey||cycle))+'</h2><div class="mnav sm"><button type="button" data-act="ch-prev" aria-label="เดือนก่อน">'+svg('chevL',15,1.8)+'</button><button type="button" data-act="ch-next" aria-label="เดือนถัดไป">'+svg('chevR',15,1.8)+'</button></div></div>'+wchart(chartKey||cycle)+'</section>';
+    h+='<div class="grid-main"><section class="card"><div class="ch"><h2>ไทม์ไลน์กำหนดส่ง · '+esc(monthLabel(chartKey||cycle))+'</h2><div class="mnav sm"><button type="button" data-act="ch-prev" aria-label="เดือนก่อน">'+svg('chevL',15,1.8)+'</button><button type="button" data-act="ch-next" aria-label="เดือนถัดไป">'+svg('chevR',15,1.8)+'</button></div></div>'+tlChart(chartKey||cycle)+'</section>';
     h+='<section class="card"><div class="ch"><h2>ความคืบหน้ารวม</h2><button class="va" type="button" data-act="goto" data-v="kanban">ดูทั้งหมด '+svg('arrow',14)+'</button></div>'+gaugeHtml(cnt,n,avg)+'<div class="hr"></div><div class="gl">';
     CAT.forEach(function(c){
       var l=items.filter(function(p){return p.category===c[0];}),d=l.filter(function(p){return p.status==='done';}).length;
