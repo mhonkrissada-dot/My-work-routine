@@ -80,9 +80,13 @@ details[open] > summary::before { transform: rotate(90deg); }
 .stats div { display: flex; gap: 5px; align-items: baseline; }
 .stats b { font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .stats span { color: var(--muted); font-size: 0.8rem; }
+.countbox { display: inline-flex; align-items: baseline; gap: 6px; margin-left: auto; padding: 4px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--soft); }
+.countbox b { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.countbox span { color: var(--muted); font-size: 0.85rem; }
+.countbox.edited { border-color: var(--warn); background: var(--warn-soft); }
 .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tag { font-size: 0.84rem; color: var(--muted); margin-top: 12px; display: block; }
-.outbox { margin-top: 6px; border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 14px 16px; overflow-wrap: anywhere; user-select: text; min-height: 130px; max-height: 340px; overflow-y: auto; line-height: 1.85; }
+.outbox { margin-top: 6px; border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 14px 16px; overflow-wrap: anywhere; white-space: pre-wrap; user-select: text; min-height: 130px; max-height: 340px; overflow-y: auto; line-height: 1.85; }
 .outbox[contenteditable]:not(.waiting) { cursor: text; background: var(--surface); }
 .outbox.waiting { color: var(--muted); user-select: none; display: grid; place-items: center; text-align: center; }
 .hint { color: var(--muted); font-size: 0.8rem; margin: 8px 0 0; }
@@ -144,10 +148,11 @@ td input.nm.low { border-color: var(--warn); background: var(--warn-soft); }
       <div class="setgrid2">
         <div class="col">
           <span class="cap">การเว้นวรรค <button type="button" class="info" data-info="space" aria-label="วิธีใช้">i</button></span>
-          <div class="infobox" id="info-space" hidden>ติ๊กเพื่อเลือกรูปแบบข้อความผลลัพธ์ <b>หลังลูกน้ำ</b>: “A, B” หรือ “A,B” · <b>ก่อนครบ</b>: “A ครบ” หรือ “Aครบ” · <b>ต่อชื่อที่มีคำว่ารวม</b>: ลบคำว่า “รวม” และช่องว่างรอบ ๆ ออก เช่น PVV1 รวม23 → PVV123</div>
+          <div class="infobox" id="info-space" hidden>ติ๊กเพื่อเลือกรูปแบบข้อความผลลัพธ์ <b>หลังลูกน้ำ</b>: “A, B” หรือ “A,B” · <b>ก่อนครบ</b>: “A ครบ” หรือ “Aครบ” · <b>ต่อชื่อที่มีคำว่ารวม</b>: ลบคำว่า “รวม” และช่องว่างรอบ ๆ ออก เช่น PVV1 รวม23 → PVV123 · <b>ใส่จำนวนโครงการบรรทัดท้าย</b>: ข้อความที่คัดลอกจะมีบรรทัด “รวม 46 โครงการ” ต่อท้าย<br>ตัวเลขจำนวนโครงการข้างปุ่มคัดลอกนับจากข้อความในกล่องผลลัพธ์จริง ถ้าพิมพ์แก้ในกล่อง ตัวเลขจะนับใหม่และกรอบเป็นสีเหลือง (ชื่อแบบ WTC1,2 นับเป็น 1)</div>
           <label><input type="checkbox" id="spaceAfterComma" checked> เว้นวรรคหลังลูกน้ำ</label>
           <label><input type="checkbox" id="spaceBeforeKrob" checked> เว้นวรรคก่อน “ครบ”</label>
           <label><input type="checkbox" id="mergeKrom" checked> ต่อชื่อที่มีคำว่ารวม</label>
+          <label><input type="checkbox" id="countInText"> ใส่จำนวนโครงการบรรทัดท้าย</label>
 
           <span class="cap" style="margin-top:10px">รอบส่งงาน <button type="button" class="info" data-info="rounds" aria-label="วิธีใช้">i</button></span>
           <div class="infobox" id="info-rounds" hidden>บรรทัดละรอบ เขียนว่า <b>กะ เวลา = ใส่ครบ</b> หรือ <b>กะ เวลา = ไม่ใส่ครบ</b> เช่น <code>กลางคืน 19:30 = ไม่ใส่ครบ</code> (ไม่ใส่คำว่ากะ: 05:00–16:59 นับเป็นกลางวัน นอกนั้นกลางคืน)<br>ตอนเปิดหน้าและทุกครั้งที่วางไฟล์ ระบบดูเวลาในเครื่อง เลือกกะและรอบที่ใกล้ที่สุดให้เอง แล้วแสดงผลลัพธ์ทันที ปุ่มรอบด้านล่างจะแสดงเฉพาะรอบของกะที่เลือกอยู่</div>
@@ -214,6 +219,7 @@ LTS-RK1 = LTS-RK1(1), LTS-RK1(1)23, LTS-RK1(1)รวม23</textarea>
         <button class="btn" type="button" data-mode="yes">ใส่ครบ</button>
         <button class="btn" type="button" data-mode="no">ไม่ใส่คำว่าครบ</button>
       </span>
+      <span class="countbox" aria-live="polite"><b class="countN">0</b><span>โครงการ</span></span>
       <button class="btn primary copy" type="button" hidden>คัดลอก</button>
     </div>
     <span class="tag"></span>
@@ -432,6 +438,19 @@ function nearestRound(rounds, d) {
   rounds.forEach(function (r, i) { var x = Math.abs(r.min - now); x = Math.min(x, 1440 - x); if (x < bd) { bd = x; best = i; } });
   return best;
 }
+// Count projects in an output text: split on commas, a bare number glues to the previous name
+// ("WTC1,2" = 1), and a closing "รวม N โครงการ" line is ignored.
+function countItems(text) {
+  var body = String(text || "").replace(/\n/g, ",");
+  var n = 0, prev = false;
+  body.split(",").forEach(function (p) {
+    var t = p.trim();
+    if (!t || /^รวม\s*\d+\s*โครงการ$/.test(t)) { prev = false; return; }
+    if (/^\d+(\s*ครบ)?$/.test(t) && prev && !/^\s/.test(p)) return;
+    n++; prev = true;
+  });
+  return n;
+}
 // opt: { merge: bool, excluded: Set of normName keys }
 function displayName(name, opt) { return opt && opt.merge ? mergeCombined(name) : String(name || ""); }
 function keyOf(name, opt) { return normName(displayName(name, opt)); }
@@ -490,6 +509,7 @@ function parseCmd(t) {
     Array.prototype.forEach.call(root.querySelectorAll("[data-mode]"), function (b) {
       b.addEventListener("click", function () { s.mode = b.getAttribute("data-mode"); renderOutput(s); });
     });
+    s.out.addEventListener("input", function () { setCount(s, countItems(s.out.textContent), true); });
     s.copy.addEventListener("click", function () {
       var btn = s.copy, text = s.out.textContent;
       function done() { btn.textContent = "คัดลอกแล้ว"; setTimeout(function () { btn.textContent = "คัดลอก"; }, 1500); }
@@ -589,14 +609,23 @@ function parseCmd(t) {
   function buildText(s, kept) {
     var sep = $("spaceAfterComma").checked ? ", " : ",";
     var suffix = s.mode === "yes" ? ($("spaceBeforeKrob").checked ? " ครบ" : "ครบ") : "";
-    return finalNames(kept, s).map(function (n) { return n + suffix; }).join(sep);
+    var names = finalNames(kept, s);
+    var text = names.map(function (n) { return n + suffix; }).join(sep);
+    if (text && $("countInText").checked) text += "\nรวม " + names.length + " โครงการ";
+    return text;
+  }
+  function setCount(s, n, edited) {
+    var cb = s.root.querySelector(".countbox");
+    cb.querySelector(".countN").textContent = n;
+    cb.classList.toggle("edited", !!edited);
+    cb.title = edited ? "นับจากข้อความที่พิมพ์แก้" : "";
   }
   function renderOutput(s, message, kept) {
     Array.prototype.forEach.call(s.root.querySelectorAll("[data-mode]"), function (b) {
       b.setAttribute("aria-pressed", !message && b.getAttribute("data-mode") === s.mode ? "true" : "false");
     });
     kept = kept || groupProjects(s.rows, getOpt()).filter(function (g) { return g.keep; });
-    if (message) { s.out.className = "outbox waiting"; s.out.removeAttribute("contenteditable"); s.out.textContent = message; s.copy.hidden = true; return; }
+    if (message) { s.out.className = "outbox waiting"; s.out.removeAttribute("contenteditable"); s.out.textContent = message; s.copy.hidden = true; setCount(s, 0, false); return; }
     if (s.mode === "yes" || s.mode === "no") {
       var text = buildText(s, kept);
       s.out.className = "outbox"; s.out.textContent = text || "ไม่มีโครงการที่ตรงเงื่อนไข";
@@ -604,16 +633,18 @@ function parseCmd(t) {
       s.out.setAttribute("aria-label", "ผลลัพธ์ พิมพ์แก้ไขได้");
       s.tag.textContent = s.label + " · " + (s.mode === "yes" ? "ใส่คำว่า “ครบ” ต่อท้าย" : "ไม่ใส่คำว่า “ครบ”") + " · " + finalNames(kept, s).length + " โครงการ";
       s.copy.hidden = !text;
+      setCount(s, text ? finalNames(kept, s).length : 0, false);
     } else {
       s.out.className = "outbox waiting"; s.out.removeAttribute("contenteditable");
       s.out.textContent = "เลือก “ใส่ครบ” หรือ “ไม่ใส่คำว่าครบ” ผลลัพธ์จะแสดงที่นี่";
       s.tag.textContent = s.label + " · " + finalNames(kept, s).length + " โครงการผ่านเงื่อนไข";
       s.copy.hidden = true;
+      setCount(s, finalNames(kept, s).length, false);
     }
   }
   function renderAll() { sets.forEach(renderSet); }
   // ---------- settings (saved in this browser, exportable) ----------
-  var CFG_IDS = { spaceAfterComma: "check", spaceBeforeKrob: "check", mergeKrom: "check", excluded: "text", aliases: "text", rounds: "text" };
+  var CFG_IDS = { spaceAfterComma: "check", spaceBeforeKrob: "check", mergeKrom: "check", countInText: "check", excluded: "text", aliases: "text", rounds: "text" };
   var CFG_DEFAULT = {};
   Object.keys(CFG_IDS).forEach(function (id) { CFG_DEFAULT[id] = CFG_IDS[id] === "check" ? $(id).checked : $(id).value; });
   function readCfg() { var c = {}; Object.keys(CFG_IDS).forEach(function (id) { c[id] = CFG_IDS[id] === "check" ? $(id).checked : $(id).value; }); return c; }
